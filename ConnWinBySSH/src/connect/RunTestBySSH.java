@@ -1,7 +1,19 @@
 package connect;
 
+/**
+ * 本工程入口类
+ * 
+ * @author tomchen
+ *
+ */
 public class RunTestBySSH {
 
+	/**
+	 * 参数也可以包含远程机器的账号和密码
+	 * 
+	 * @param args
+	 *            待执行的命令
+	 */
 	public static void main(String[] args) {
 		if (args.length < 1) {
 			System.out.println("Usage:\nRun: java -jar runTestOnWinBySSH <cmd>");
@@ -9,6 +21,7 @@ public class RunTestBySSH {
 		} else {
 			String para = args[0];
 			try {
+				// windows 机器的账号和密码也可以从参数中获取
 				// windows 机器的账号
 				String user = "**user**";
 				// windows 机器的密码
