@@ -1,6 +1,6 @@
 ## 说明 ##
 
-本工程基于 JSCH（官网链接 http://www.jcraft.com/jsch/），实现连接远程 Windows 机器并在该 Windows 机器上执行一些命令。
+本工程基于 JSCH（官网链接 [http://www.jcraft.com/jsch](http://www.jcraft.com/jsch)  ），实现连接远程 Windows 机器并在该 Windows 机器上执行一些命令。
 
 项目地址 https://github.com/studychen/java/
 
@@ -37,7 +37,7 @@ Jar 包下载地址 http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.jcraf
 >Note
 >请保证远程机器上已经开启 SSH 服务，Windows 可以尝试freeSSHD或者openSSH。
 >
->如果想通过 SSH 调用图形化程序，可以尝试通过`ssh -X`。
+>如果想通过 SSH 调用图形化程序，可以尝试`ssh -X` 或是 `ssh -Y`。
 
 ## JSCH 一些示例代码 ##
 
