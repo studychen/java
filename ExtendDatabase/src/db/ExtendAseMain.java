@@ -16,7 +16,7 @@ public class ExtendAseMain {
 			// 转换为大写
 			sid = args[2].toUpperCase();
 		} else {
-			throw new Exception("wrong agrs, usage: java -jar extendAse <ip> <asePort> <sid>");
+			throw new Exception("wrong agrs, usage: java -jar extendDb.jar <ip> <asePort> <sid>");
 		}
 		System.out.println("===== extend ASE database & log on " + ip + "start ====");
 
