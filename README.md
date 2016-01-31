@@ -20,3 +20,5 @@
 - SeeNewsJsp	JSP+Servlet实现的新闻爬虫
 
 - ParseArticleDataDemo 在 SeeNewsJsp	基础上重构的爬虫
+
+- ThreeNodeMiniAuto 简单的自动化测试：检查配置、切换模式、执行异步任务、验证是否成功
