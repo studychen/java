@@ -206,6 +206,10 @@ public class FirstAutoTest {
 		System.out.println("--------------failback end------------------");
 	}
 
+	/**
+	 * 可refer to HADRThirdUser.checkHADRStatus
+	 * 它检查了状态是否 Active 或 Suspended
+	 */
 	public void checkPath() {
 		// 这儿 check path 只是输出信息
 		// 没有代码检验链路 PRI.STA.NW7 PRI.STA.master 是否Active Suspended

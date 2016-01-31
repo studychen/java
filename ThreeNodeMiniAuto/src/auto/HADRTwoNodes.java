@@ -8,7 +8,7 @@ import java.util.Properties;
  * @author tomchen
  *
  */
-public class HADRUser {
+public class HADRTwoNodes {
 	// RMA的连接
 	Connection connection;
 
@@ -19,7 +19,7 @@ public class HADRUser {
 	 * @param serverName ip或者域名
 	 * @param port 端口
 	 */
-	HADRUser(String userName, String password, String serverName, String port) {
+	HADRTwoNodes(String userName, String password, String serverName, String port) {
 		try {
 			DriverManager.registerDriver((Driver) Class.forName("com.sybase.jdbc4.jdbc.SybDriver").newInstance());
 			String connectionString = "jdbc:sybase:Tds:" + serverName + ":" + port;

@@ -12,8 +12,13 @@ import java.util.Map;
  * @author tomchen
  *
  */
-public class HADRThirdUser extends HADRUser {
+public class HADRThreeNodes extends HADRTwoNodes {
 
+	// 保存sap_set得到的配置信息
+	// 实力格式
+	// PRI, ase_port 4901
+	// PRI, ase_user DR_admin
+	// PRI, ase_backup_server_port 4902
 	ArrayList<String[]> oneSiteInfo;
 	ArrayList<String[]> otherSiteInfo;
 	ArrayList<String[]> thirdSiteInfo;
@@ -34,7 +39,7 @@ public class HADRThirdUser extends HADRUser {
 	// value -> HashMap存放状态和对应的值
 	Map<String, HashMap<String, String>> pathStatus;
 
-	public HADRThirdUser(String userName, String password, String serverName, String port, String thirdNodeName) {
+	public HADRThreeNodes(String userName, String password, String serverName, String port, String thirdNodeName) {
 		super(userName, password, serverName, port);
 		this.thirdNodeName = thirdNodeName;
 
@@ -54,6 +59,7 @@ public class HADRThirdUser extends HADRUser {
 	public String retrieveInfoFromSiteInfo(String keyInfo) {
 		String value = "";
 
+		// 示例格式 D0, dr_plugin_port 4909
 		// Chech from serverInfo to find the info your want.
 		// For example: keyInfo=D0, ase_port
 		for (int i = 0; i < oneSiteInfo.size(); i++) {
@@ -77,7 +83,10 @@ public class HADRThirdUser extends HADRUser {
 		return value;
 	}
 
-	// 查看最新的 sap_status path
+	/**
+	 * 查看最新的 sap_status path
+	 * 更新主从的节点名称（类变量存放）
+	 */
 	public void updateSysInfo() {
 		String sqlCmd = "sap_status path";
 		ArrayList<String[]> tmpInfo = new ArrayList<String[]>();
@@ -100,21 +109,9 @@ public class HADRThirdUser extends HADRUser {
 			exp.printStackTrace();
 		}
 
-		HashMap<String, String> statusOfSiteOne = pathStatus.get(oneSiteName);
-		HashMap<String, String> statusOfSiteTwo = pathStatus.get(otherSiteName);
-		HashMap<String, String> statusOfSiteThree = pathStatus.get(thirdSiteName);
-
-		HashMap<String, String> repStatusOfSiteOne = pathStatus.get(oneSiteName);
-		HashMap<String, String> repStatusOfSiteTwo = pathStatus.get(otherSiteName);
-		HashMap<String, String> repStatusOfSiteThree = pathStatus.get(thirdSiteName);
-		HashMap<String, String> tmpMapC1 = pathStatus.get(oneSiteName + "." + otherSiteName + "." + sap_sid);
-		HashMap<String, String> tmpMapC2 = pathStatus.get(oneSiteName + "." + otherSiteName + "." + "master");
-		HashMap<String, String> tmpMapD1 = pathStatus.get(otherSiteName + "." + oneSiteName + "." + sap_sid);
-		;
-		HashMap<String, String> tmpMapD2 = pathStatus.get(otherSiteName + "." + oneSiteName + "." + "master");
-		;
-
-		// Find the Primary and Standby:
+		// 示例格式如下
+		// PRI HADR Status Primary : Active Identify the primary and standby
+		// 找出当前主和从的名称
 		for (int i = 2; i < tmpInfo.size(); i++) {
 			if (tmpInfo.get(i)[1].trim().equals("HADR Status")) {
 				if (tmpInfo.get(i)[2].trim().equals("Primary : Active")) {
@@ -128,6 +125,8 @@ public class HADRThirdUser extends HADRUser {
 
 			// Update status:
 			try {
+				// 改变 key 和 vaule
+				// 先 get 得到一个 hashmap，在对这个 hashmap put key & value
 				pathStatus.get(tmpInfo.get(i)[0]).put(tmpInfo.get(i)[1], tmpInfo.get(i)[2]);
 			} catch (Exception exp) {
 				System.err.println("There are record can't be hanned! exit...");
@@ -136,6 +135,9 @@ public class HADRThirdUser extends HADRUser {
 		}
 	}
 
+	/**
+	 * 打印出产品的状态信息
+	 */
 	public void printSysInfo() {
 		System.out.println("********************************************************");
 		// 共3个节点，遍历每个节点
@@ -149,6 +151,9 @@ public class HADRThirdUser extends HADRUser {
 		}
 	}
 
+	/**
+	 * 获取 site 信息
+	 */
 	private void getServerSiteInfo() {
 		// 设置信息
 		String sqlCmd = "sap_set";
@@ -177,6 +182,7 @@ public class HADRThirdUser extends HADRUser {
 		sap_sid = tmpInfo.get(1)[1].trim();
 
 		// 一共3个节点，将所有信息分为3组
+		// 忽略前面有4条记录
 		int nItem = (tmpInfo.size() - 4) / 3;
 
 		for (int i = 0; i < nItem; i++) {
@@ -186,6 +192,7 @@ public class HADRThirdUser extends HADRUser {
 		}
 
 		// 各个节点的主机名
+		// 原字符串为PRI, ase_port
 		oneSiteName = oneSiteInfo.get(0)[0].split(",")[0].trim();
 		otherSiteName = otherSiteInfo.get(0)[0].split(",")[0].trim();
 		thirdSiteName = thirdSiteInfo.get(0)[0].split(",")[0].trim();
@@ -232,7 +239,7 @@ public class HADRThirdUser extends HADRUser {
 		// PRI.STA.NW7 Distribution Path STA The path of Replication Server
 		// through which transactions travel.
 
-		// 一个PRI.STA.NW7会有几个对应的信息
+		// 每一个类似PRI.STA.NW7的 key 都会有下面几个对应的信息
 		for (String keyForOneRepStatus : keysForRepStatus) {
 			HashMap<String, String> oneRepStatus = new HashMap<String, String>();
 			oneRepStatus.put("State", "");
@@ -254,19 +261,26 @@ public class HADRThirdUser extends HADRUser {
 		waitForToken();
 	}
 
+	/**
+	 * 清空rs_ticket_history，然后主节点只插一条记录
+	 * 预期从节点也会有一条记录
+	 */
 	private void waitForToken() {
 		// Run updateSysInfo() before run this command.
 		// Current Pri=curPrimarySite
-		HADRUser tmpPriDRAdmin = new HADRUser("DR_admin", "**passwd**", pathStatus.get(curPrimarySite).get("Hostname"),
+		HADRTwoNodes tmpPriDRAdmin = new HADRTwoNodes("DR_admin", "**passwd**",
+				pathStatus.get(curPrimarySite).get("Hostname"),
 				this.retrieveInfoFromSiteInfo(curPrimarySite + ", dr_plugin_port"));
-		HADRUser tmpSecSapsa = new HADRUser("sapsa", "**passwd**", pathStatus.get(curStandbySite).get("Hostname"),
+		HADRTwoNodes tmpSecSapsa = new HADRTwoNodes("sapsa", "**passwd**",
+				pathStatus.get(curStandbySite).get("Hostname"),
 				this.retrieveInfoFromSiteInfo(curStandbySite + ", ase_port"));
+
 		String sendTraceCmd = "sap_send_trace " + curPrimarySite;
 		// First clean <SID>.rs_ticket_history
 		tmpSecSapsa.getResultOfDBTable("use " + sap_sid, "truncate table rs_ticket_history", "NORET");
+
 		tmpPriDRAdmin.getResultBySQLCmd(sendTraceCmd);
 		// Check whether the trace is get or not
-
 		boolean tokenGet = false;
 		int countOfToken = 0;
 		while (!tokenGet) {
@@ -280,6 +294,7 @@ public class HADRThirdUser extends HADRUser {
 				tokenGet = true;
 			}
 			countOfToken++;
+			// 最多检验10次，还未结束，抛出异常测试失败
 			if (countOfToken > 10) {
 				System.out.println("Error!Can't get token from standby");
 				throw new RuntimeException("Error!Can't get token from standby");
@@ -331,9 +346,9 @@ public class HADRThirdUser extends HADRUser {
 	}
 
 	public void failover(String curPrimary, String curStandby, String timeout, String otherParam) {
-		checkHADRStatus(); // Make sure env is OK before failover, the env is
-							// not OK after failover, so we should not check env
-							// status after failover
+		// 在 failover 之前检查状态
+		// 不该在 failover 之后检查，因为一次 failover 可能会导致状态不对
+		checkHADRStatus();
 		String cmd = "";
 		if (otherParam == null || otherParam.toLowerCase().equals("")) {
 			cmd = "sap_failover " + curPrimary + "," + curStandby + "," + timeout;
@@ -343,6 +358,7 @@ public class HADRThirdUser extends HADRUser {
 			cmd = "sap_failover " + curPrimary + "," + curStandby + "," + timeout + "," + otherParam;
 		}
 		this.getResultBySQLCmd(cmd);
+		// 检查异步命令是否执行完成
 		this.waitUntilFinished();
 		this.getResultBySQLCmd(cmd);
 	}
@@ -358,6 +374,9 @@ public class HADRThirdUser extends HADRUser {
 		this.getResultBySQLCmd(cmd);
 	}
 
+	/**
+	 * 检查链路是否
+	 */
 	public void checkHADRStatus() {
 		updateSysInfo();
 		String primary = this.curPrimarySite;
@@ -366,21 +385,26 @@ public class HADRThirdUser extends HADRUser {
 		String sid = this.sap_sid.toUpperCase();
 		ArrayList<String> repShouldActive = new ArrayList<String>();
 		ArrayList<String> repShouldSuspended = new ArrayList<String>();
+
+		// 主从链路应是 active
 		repShouldActive.add(primary + "." + standby + ".master");
 		repShouldActive.add(primary + "." + thirdNode + ".master");
 		repShouldActive.add(primary + "." + standby + "." + sid);
 		repShouldActive.add(primary + "." + thirdNode + "." + sid);
 
+		// 从主链路应是 suspended
 		repShouldSuspended.add(standby + "." + primary + ".master");
 		repShouldSuspended.add(standby + "." + thirdNode + ".master");
 		repShouldSuspended.add(standby + "." + primary + "." + sid);
 		repShouldSuspended.add(standby + "." + thirdNode + "." + sid);
 
+		// 3rd节点应是 suspended
 		repShouldSuspended.add(thirdNode + "." + primary + ".master");
 		repShouldSuspended.add(thirdNode + "." + standby + ".master");
 		repShouldSuspended.add(thirdNode + "." + primary + "." + sid);
 		repShouldSuspended.add(thirdNode + "." + standby + "." + sid);
 
+		// 只能多次遍历，因为可能主从链路状态显示在前，也有从主链路在前
 		for (String key : repShouldActive) {
 			if (!pathStatus.get(key).get("State").trim().equals("Active")) {
 				throw new RuntimeException("HADR status is WRONG! Check the env before continue!");
