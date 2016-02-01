@@ -12,13 +12,13 @@
 
 链接 http://seenews.applinzi.com/jsp/list.jsp?index=5
 
-![list](http://7xqo2w.com1.z0.glb.clouddn.com/Screen%20Shot%202016-02-01%20at%204.46.51%20PM.png)
+<img src="http://7xqo2w.com1.z0.glb.clouddn.com/newslist.png" width="50%" height="80%" alt="blog.csdn.net/never_cxb" align="center">
 
 ###获取某条新闻的详情内容（适配移动端）
 
 链接 http://seenews.applinzi.com/jsp/detail.jsp?num=7909
 
-![detail](http://7xqo2w.com1.z0.glb.clouddn.com/Screen%20Shot%202016-02-01%20at%205.11.24%20PM.png)
+<img src="http://7xqo2w.com1.z0.glb.clouddn.com/detail.png" width="50%" height="80%" alt="blog.csdn.net/never_cxb" align="center">
 
 ##思路
 
