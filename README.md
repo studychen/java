@@ -13,6 +13,8 @@
 
 - ExtendDatabase 提高效率工具工程，扩展 ASE 数据库的data空间和log空间（默认增加 40G data和 10G log）。
 
+- DBLogMonitor 监控远程机器的数据库log文件，当日志已满时清空 log 
+
 - JobduOnlineJudge 九度Online Judge部分题解
 
 - RefreshCsdnBlog 刷新博客访问量
