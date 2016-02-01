@@ -1,26 +1,35 @@
 说明
 =======
-此仓库保存笔者的一些 java 项目。
+此仓库保存笔者的新闻爬虫项目。
 
 本项目地址 [https://github.com/studychen/java/](https://github.com/studychen/android/)
 
 个人博客，欢迎交流 [http://blog.csdn.net/never_cxb](http://blog.csdn.net/never_cxb)
 
-目前一共有下面几个项目
+##使用示例：
 
+###获取各个栏目的新闻列表（本科通知、研究生信息、就业招聘等）
 
-- ConnWinBySSH 基于 JSCH 实现Linux远程连接windows并执行一些命令
+链接 http://seenews.applinzi.com/jsp/list.jsp?index=5
 
-- ExtendDatabase 提高效率工具工程，扩展 ASE 数据库的data空间和log空间（默认增加 40G data和 10G log）。
+<img src="http://7xqo2w.com1.z0.glb.clouddn.com/newslist.png" width="50%" height="80%" alt="blog.csdn.net/never_cxb" align="center">
 
-- JobduOnlineJudge 九度Online Judge部分题解
+###获取某条新闻的详情内容（适配移动端）
 
-- RefreshCsdnBlog 刷新博客访问量
+链接 http://seenews.applinzi.com/jsp/detail.jsp?num=7909
 
-- SeeNewsJsp	JSP+Servlet实现的新闻爬虫
+<img src="http://7xqo2w.com1.z0.glb.clouddn.com/detail.png" width="50%" height="80%" alt="blog.csdn.net/never_cxb" align="center">
 
-- ParseArticleDataDemo 在 SeeNewsJsp	基础上重构的爬虫
+##思路
 
-- ThreeNodeMiniAuto 简单的自动化测试：检查配置、切换模式、执行异步任务、验证是否成功
+APP根据新闻id访问jsp -> jsp爬取学院新闻 ->抓取的内容返回给 APP
 
-- Practices 学习Java过程中的一些测试、验证、练习
+优点：
+
+- 省流量（服务端的 jsp 过滤了原网页的无用信息）
+- 适配手机端阅读，为了方便分享到朋友圈阅读
+
+缺点：
+
+- 每次都需要两次请求，先请求 jsp，再请求学院网站
+- 数据没有缓存，后期打算将请求的新闻数据保存到 Mysql 中
