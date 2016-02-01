@@ -18,7 +18,7 @@
 
 链接 http://seenews.applinzi.com/jsp/detail.jsp?num=7909
 
-![detail](http://7xqo2w.com1.z0.glb.clouddn.com/Screen%20Shot%202016-02-01%20at%204.50.40%20PM.png)
+![detail](http://7xqo2w.com1.z0.glb.clouddn.com/Screen%20Shot%202016-02-01%20at%205.11.24%20PM.png)
 
 ##思路
 
